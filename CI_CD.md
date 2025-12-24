@@ -4,7 +4,7 @@
 
 ### Test Execution
 
-While the library is in the `pkg/manapool/` directory of the tcg-repricer monorepo, tests are executed as part of the main project's CI pipeline:
+This library is a standalone package, tests are executed as part of the main project's CI pipeline:
 
 ```bash
 # Main project's CI runs this, which includes pkg/manapool tests
@@ -22,7 +22,7 @@ Use `make test` / `make ci-local` locally to continue running:
 ### Benefits of Monorepo Testing
 
 1. **No duplication** - Tests run once for entire codebase
-2. **Integration testing** - Can test manapool client usage in tcg-repricer
+2. **Integration testing** - Can test manapool client usage in the main application
 3. **Shared CI configuration** - One workflow to maintain
 4. **Faster feedback** - Single pipeline for all changes
 
