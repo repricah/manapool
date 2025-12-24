@@ -6,7 +6,6 @@ A high-quality Go client library for the [Manapool API](https://manapool.com). T
 
 [![Go Reference](https://pkg.go.dev/badge/github.com/repricah/manapool-tools.svg)](https://pkg.go.dev/github.com/repricah/manapool-tools)
 [![Go Report Card](https://goreportcard.com/badge/github.com/repricah/manapool-tools)](https://goreportcard.com/report/github.com/repricah/manapool-tools)
-[![Coverage](https://img.shields.io/badge/coverage-96.5%25-brightgreen.svg)](https://github.com/repricah/manapool-tools)
 
 ## Features
 
