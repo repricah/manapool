@@ -393,10 +393,6 @@ Contributions are welcome! Please:
 
 MIT License - see LICENSE file for details
 
-## Related Projects
-
-- [manapool-tools](https://github.com/repricah/manapool-tools) - TCG inventory repricing tool using this library
-
 ## Support
 
 - 📖 [API Documentation](https://pkg.go.dev/github.com/repricah/manapool-tools)
