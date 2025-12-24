@@ -1,6 +1,6 @@
 # Manapool Go Client
 
-> **⚠️ Pre-Release (v0.1.0)**: This library is under active development. The API may change before v1.0.0. Planned features are tracked in GitHub issues GitHub issues.
+> **⚠️ Pre-Release (v0.2.0)**: This library is under active development. The API may change before v1.0.0. Planned features are tracked in GitHub issues GitHub issues.
 
 A Go client library for the [Manapool API](https://manapool.com). This library provides a Go interface for managing your Magic: The Gathering inventory on Manapool.
 
@@ -9,7 +9,7 @@ A Go client library for the [Manapool API](https://manapool.com). This library p
 
 ## Features
 
-### Currently Implemented (v0.1.0)
+### Currently Implemented (v0.2.0)
 
 - ✅ **Seller Inventory Endpoints** - Get account, list inventory, lookup by TCG SKU
 - ✅ **Type-Safe** - Full Go type definitions for all API models
@@ -401,7 +401,14 @@ MIT License - see LICENSE file for details
 
 ## Changelog
 
-### v0.1.0 (2025-01-28)
+### v0.2.0 (2025-12-23)
+
+- 🔄 Rename module to `github.com/repricah/manapool`
+- 🧹 Remove references to `tcg-repricer`
+- ⚖️ Use neutral tone in documentation
+- 👤 Corrected authorship to `jblotus`
+
+### v0.2.0 (2025-01-28)
 
 - 🎉 Initial pre-release
 - ✅ Seller account endpoint (`GetSellerAccount`)
