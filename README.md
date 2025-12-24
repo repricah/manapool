@@ -1,6 +1,6 @@
 # Manapool Go Client
 
-> **⚠️ Pre-Release (v0.1.0)**: This library is under active development. The API may change before v1.0.0. Planned features are tracked in Beads issues manapool-tools-280–286.
+> **⚠️ Pre-Release (v0.1.0)**: This library is under active development. The API may change before v1.0.0. Planned features are tracked in GitHub issues GitHub issues.
 
 A high-quality Go client library for the [Manapool API](https://manapool.com). This library provides a clean, idiomatic Go interface for managing your Magic: The Gathering inventory on Manapool.
 
@@ -23,14 +23,14 @@ A high-quality Go client library for the [Manapool API](https://manapool.com). T
 
 ### Planned Features
 
-Planned features are tracked in Beads:
-- 🔜 **Additional Lookups** (manapool-tools-280) - Scryfall ID, product ID, TCGPlayer ID lookups
-- 🔜 **Order Management** (manapool-tools-281) - List and view seller orders
-- 🔜 **Order Fulfillment** (manapool-tools-282) - Mark orders as shipped/fulfilled
-- 🔜 **Inventory Updates** (manapool-tools-283) - Create, update, delete inventory items
-- 🔜 **Webhook Support** (manapool-tools-284) - Register and manage webhooks
-- 🔜 **Release Readiness** (manapool-tools-285) - v1.0.0 stabilization and publishing steps
-- 🔜 **Repository Extraction** (manapool-tools-286) - Move the client into a standalone repository
+Planned features are tracked in GitHub:
+- 🔜 **Additional Lookups** () - Scryfall ID, product ID, TCGPlayer ID lookups
+- 🔜 **Order Management** () - List and view seller orders
+- 🔜 **Order Fulfillment** () - Mark orders as shipped/fulfilled
+- 🔜 **Inventory Updates** () - Create, update, delete inventory items
+- 🔜 **Webhook Support** () - Register and manage webhooks
+- 🔜 **Release Readiness** () - v1.0.0 stabilization and publishing steps
+- 🔜 **Repository Extraction** () - Move the client into a standalone repository
 
 ## Installation
 
