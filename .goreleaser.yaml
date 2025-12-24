@@ -1,0 +1,17 @@
+version: 2
+
+project_name: manapool-tools
+
+release:
+  github:
+    owner: repricah
+    name: manapool-tools
+  draft: true
+  prerelease: auto
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - '^docs:'
+      - '^test:'
