@@ -49,11 +49,13 @@ jobs:
     - uses: actions/setup-node@v4
       with:
         node-version: 20
+    - name: Install Prism CLI
+      run: npm install -g @stoplight/prism-cli@5
     - name: Run OpenAPI mock e2e checks
       run: |
         PRISM_LOG=prism.log
         export PRISM_LOG
-        npx @stoplight/prism-cli@5 mock openapi.json -p 4010 --verboseLevel silent --dynamic >"$PRISM_LOG" 2>&1 &
+        prism mock openapi.json -p 4010 --verboseLevel silent --dynamic >"$PRISM_LOG" 2>&1 &
         PRISM_PID=$!
         trap "kill $PRISM_PID || true" EXIT
         ./scripts/e2e-mock.sh http://127.0.0.1:4010
