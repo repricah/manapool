@@ -440,7 +440,6 @@ MIT License - see LICENSE file for details
 ### v0.2.0 (2025-12-23)
 
 - 🔄 Rename module to `github.com/repricah/manapool`
-- 🧹 Remove references to `tcg-repricer`
 - ⚖️ Use neutral tone in documentation
 - 👤 Corrected authorship to `jblotus`
 
