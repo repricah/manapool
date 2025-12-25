@@ -33,7 +33,7 @@ const (
 	DefaultInitialBackoff = 1 * time.Second
 
 	// Version is the library version.
-	Version = "0.1.0"
+	Version = "0.2.0"
 )
 
 // APIClient defines the interface for interacting with the Manapool API.

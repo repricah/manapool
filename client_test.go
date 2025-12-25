@@ -519,8 +519,8 @@ func TestClient_Constants(t *testing.T) {
 	if DefaultInitialBackoff != 1*time.Second {
 		t.Errorf("DefaultInitialBackoff = %v, want %v", DefaultInitialBackoff, 1*time.Second)
 	}
-	if Version != "0.1.0" {
-		t.Errorf("Version = %q, want %q", Version, "0.1.0")
+	if Version != "0.2.0" {
+		t.Errorf("Version = %q, want %q", Version, "0.2.0")
 	}
 }
 
