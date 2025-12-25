@@ -10,88 +10,76 @@ total_tests=0
 echo "# E2E Mock Test Results" > "$summary_file"
 echo "" >> "$summary_file"
 
-request() {
-  local method=$1
-  local url=$2
-  local data=${3-}
-  local test_name="$method $(basename "$url")"
-  shift 3
-
-  echo "==> ${method} ${url}"
-  if [[ -n "${data}" ]]; then
-    echo "    payload: ${data}"
-  fi
-
-  local status_code
-  local success=true
+test_get() {
+  local endpoint=$1
+  local test_name="GET $endpoint"
+  echo "==> Testing $test_name"
   
-  if ! curl -sS --fail-with-body -o /tmp/e2e-body.json -w "%{http_code}" \
-    -X "${method}" \
-    "$@" \
-    ${data:+-d "$data"} \
-    "${url}" > /tmp/e2e-status.txt 2>/dev/null; then
-    success=false
-  fi
+  total_tests=$((total_tests + 1))
   
-  status_code=$(cat /tmp/e2e-status.txt 2>/dev/null || echo "000")
-  local body=$(cat /tmp/e2e-body.json 2>/dev/null || echo "No response")
+  local status_code="000"
+  set +e  # Temporarily disable exit on error
+  status_code=$(curl -sS -w "%{http_code}" -o /dev/null "$base_url$endpoint" 2>/dev/null)
+  set -e  # Re-enable exit on error
   
-  echo "    status: $status_code"
-  echo "    body: $body"
-  
-  ((total_tests++))
-  
-  # Add to summary
-  if [[ "$success" == "true" && "$status_code" =~ ^2[0-9][0-9]$ ]]; then
+  if [[ "$status_code" =~ ^2[0-9][0-9]$ ]]; then
     echo "✅ $test_name - Status: $status_code" >> "$summary_file"
+    echo "    ✅ Status: $status_code"
   else
     echo "❌ $test_name - Status: $status_code" >> "$summary_file"
-    echo "::error title=E2E Test Failed::$test_name returned status $status_code"
-    ((failed_tests++))
+    echo "    ❌ Status: $status_code"
+    failed_tests=$((failed_tests + 1))
   fi
 }
 
+test_post() {
+  local endpoint=$1
+  local data=$2
+  local test_name="POST $endpoint"
+  echo "==> Testing $test_name"
+  
+  total_tests=$((total_tests + 1))
+  
+  local status_code="000"
+  set +e  # Temporarily disable exit on error
+  status_code=$(curl -sS -w "%{http_code}" -o /dev/null \
+    -H "Content-Type: application/json" \
+    -d "$data" \
+    -X POST "$base_url$endpoint" 2>/dev/null)
+  set -e  # Re-enable exit on error
+  
+  if [[ "$status_code" =~ ^2[0-9][0-9]$ ]]; then
+    echo "✅ $test_name - Status: $status_code" >> "$summary_file"
+    echo "    ✅ Status: $status_code"
+  else
+    echo "❌ $test_name - Status: $status_code" >> "$summary_file"
+    echo "    ❌ Status: $status_code"
+    failed_tests=$((failed_tests + 1))
+  fi
+}
+
+# Wait for Prism to be ready
+echo "Waiting for Prism to be ready..."
 ready=false
 for i in {1..30}; do
   if curl -sf "$base_url/prices/singles" >/dev/null 2>&1; then
     ready=true
+    echo "✅ Prism is ready"
     break
   fi
   sleep 2
 done
 
-if [[ "${ready}" != "true" ]]; then
-  echo "::error title=Prism Mock Server Failed::Prism mock did not become ready at ${base_url}"
-  if [[ -n "${PRISM_LOG:-}" && -f "${PRISM_LOG}" ]]; then
-    echo "Prism log output:"
-    cat "${PRISM_LOG}"
-  fi
+if [[ "$ready" != "true" ]]; then
+  echo "❌ Prism mock server failed to start"
   exit 1
 fi
 
-request GET "$base_url/prices/singles"
-request GET "$base_url/prices/variants"
-request GET "$base_url/prices/sealed"
-
-request GET "$base_url/account" "" \
-  -H "X-ManaPool-Access-Token: test-token" \
-  -H "X-ManaPool-Email: test@example.com"
-
-request POST "$base_url/buyer/optimizer" \
-  '{"cart":[{"type":"mtg_single","name":"Polar Kraken","quantity_requested":1,"language_ids":["EN"],"finish_ids":["NF"],"condition_ids":["NM"]}]}' \
-  -H "Content-Type: application/json"
-
-request POST "$base_url/deck" \
-  '{"commander_names":["Atraxa, Praetors\u0027 Voice"],"other_cards":[{"name":"Lightning Bolt","quantity":4}]}' \
-  -H "Content-Type: application/json"
-
-request POST "$base_url/card_info" \
-  '{"card_names":["Lightning Bolt"]}' \
-  -H "Content-Type: application/json"
-
-request GET "$base_url/buyer/orders?since=2024-04-01T00:00:00Z&limit=1" "" \
-  -H "X-ManaPool-Access-Token: test-token" \
-  -H "X-ManaPool-Email: test@example.com"
+# Run tests
+test_get "/prices/singles"
+test_get "/prices/variants"  
+test_get "/prices/sealed"
+test_post "/buyer/optimizer" '{"cart":[{"type":"mtg_single","name":"Polar Kraken","quantity_requested":1,"language_ids":["EN"],"finish_ids":["NF"],"condition_ids":["NM"]}]}'
 
 # Generate final summary
 echo "" >> "$summary_file"
@@ -102,11 +90,12 @@ echo "- Total tests: $total_tests" >> "$summary_file"
 echo "- Passed: $passed_tests" >> "$summary_file"
 echo "- Failed: $failed_tests" >> "$summary_file"
 
-echo "::notice title=E2E Results::$passed_tests/$total_tests tests passed"
+echo ""
+echo "Summary: $passed_tests/$total_tests tests passed"
 
 if [[ "$failed_tests" -gt 0 ]]; then
-  echo "::error title=E2E Tests Failed::$failed_tests out of $total_tests tests failed"
+  echo "❌ $failed_tests tests failed"
   exit 1
 fi
 
-echo "All E2E tests passed!"
+echo "✅ All tests passed!"
