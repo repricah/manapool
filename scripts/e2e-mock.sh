@@ -18,11 +18,11 @@ request() {
     -X "${method}" \
     "$@" \
     ${data:+-d "$data"} \
-    "${url}" || {
+    "${url}" 2>/dev/null || {
     echo "    Request failed, but continuing..."
     echo "{}" > /tmp/e2e-body.json
   }
-  echo "    body: $(cat /tmp/e2e-body.json)"
+  echo "    body: $(cat /tmp/e2e-body.json 2>/dev/null || echo 'No response body')"
 }
 
 ready=false
