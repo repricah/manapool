@@ -3,6 +3,25 @@ set -euo pipefail
 
 base_url=${1:-http://127.0.0.1:4010}
 
+request() {
+  local method=$1
+  local url=$2
+  local data=${3-}
+  shift 3
+
+  echo "==> ${method} ${url}"
+  if [[ -n "${data}" ]]; then
+    echo "    payload: ${data}"
+  fi
+
+  curl -sS -o /tmp/e2e-body.json -w "    status: %{http_code}\n" \
+    -X "${method}" \
+    "$@" \
+    ${data:+-d "$data"} \
+    "${url}"
+  echo "    body: $(cat /tmp/e2e-body.json)"
+}
+
 for _ in {1..20}; do
   if curl -sf "$base_url/prices/singles" >/dev/null; then
     break
@@ -10,31 +29,26 @@ for _ in {1..20}; do
   sleep 1
 done
 
-curl -sf "$base_url/prices/singles" >/dev/null
-curl -sf "$base_url/prices/variants" >/dev/null
-curl -sf "$base_url/prices/sealed" >/dev/null
+request GET "$base_url/prices/singles"
+request GET "$base_url/prices/variants"
+request GET "$base_url/prices/sealed"
 
-curl -sf \
+request GET "$base_url/account" "" \
   -H "X-ManaPool-Access-Token: test-token" \
-  -H "X-ManaPool-Email: test@example.com" \
-  "$base_url/account" >/dev/null
+  -H "X-ManaPool-Email: test@example.com"
 
-curl -sf \
-  -H "Content-Type: application/json" \
-  -d '{"cart":[{"type":"mtg_single","name":"Polar Kraken","quantity_requested":1,"language_ids":["EN"],"finish_ids":["NF"],"condition_ids":["NM"]}]}' \
-  "$base_url/buyer/optimizer" >/dev/null
+request POST "$base_url/buyer/optimizer" \
+  '{"cart":[{"type":"mtg_single","name":"Polar Kraken","quantity_requested":1,"language_ids":["EN"],"finish_ids":["NF"],"condition_ids":["NM"]}]}' \
+  -H "Content-Type: application/json"
 
-curl -sf \
-  -H "Content-Type: application/json" \
-  -d '{"commander_names":["Atraxa, Praetors\u0027 Voice"],"other_cards":[{"name":"Lightning Bolt","quantity":4}]}' \
-  "$base_url/deck" >/dev/null
+request POST "$base_url/deck" \
+  '{"commander_names":["Atraxa, Praetors\u0027 Voice"],"other_cards":[{"name":"Lightning Bolt","quantity":4}]}' \
+  -H "Content-Type: application/json"
 
-curl -sf \
-  -H "Content-Type: application/json" \
-  -d '{"card_names":["Lightning Bolt"]}' \
-  "$base_url/card_info" >/dev/null
+request POST "$base_url/card_info" \
+  '{"card_names":["Lightning Bolt"]}' \
+  -H "Content-Type: application/json"
 
-curl -sf \
+request GET "$base_url/buyer/orders?since=2024-04-01T00:00:00Z&limit=1" "" \
   -H "X-ManaPool-Access-Token: test-token" \
-  -H "X-ManaPool-Email: test@example.com" \
-  "$base_url/buyer/orders?since=2024-04-01T00:00:00Z&limit=1" >/dev/null
+  -H "X-ManaPool-Email: test@example.com"
