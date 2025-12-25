@@ -35,28 +35,36 @@ func TestClient_WebhooksEndpoints(t *testing.T) {
 	client := NewClient("test-token", "test@example.com", WithBaseURL(server.URL+"/"))
 	ctx := context.Background()
 
-	webhooks, err := client.GetWebhooks(ctx, "")
-	if err != nil {
-		t.Fatalf("GetWebhooks error: %v", err)
-	}
-	if len(webhooks.Webhooks) != 1 {
-		t.Fatalf("webhooks count = %d, want 1", len(webhooks.Webhooks))
-	}
+	t.Run("GetWebhooks", func(t *testing.T) {
+		webhooks, err := client.GetWebhooks(ctx, "")
+		if err != nil {
+			t.Fatalf("GetWebhooks error: %v", err)
+		}
+		if len(webhooks.Webhooks) != 1 {
+			t.Fatalf("webhooks count = %d, want 1", len(webhooks.Webhooks))
+		}
+	})
 
-	webhook, err := client.GetWebhook(ctx, "wh")
-	if err != nil {
-		t.Fatalf("GetWebhook error: %v", err)
-	}
-	if webhook.ID != "wh" {
-		t.Fatalf("webhook id = %s, want wh", webhook.ID)
-	}
+	t.Run("GetWebhook", func(t *testing.T) {
+		webhook, err := client.GetWebhook(ctx, "wh")
+		if err != nil {
+			t.Fatalf("GetWebhook error: %v", err)
+		}
+		if webhook.ID != "wh" {
+			t.Fatalf("webhook id = %s, want wh", webhook.ID)
+		}
+	})
 
-	_, err = client.RegisterWebhook(ctx, WebhookRegisterRequest{Topic: "order_created", CallbackURL: "https://example.com"})
-	if err != nil {
-		t.Fatalf("RegisterWebhook error: %v", err)
-	}
+	t.Run("RegisterWebhook", func(t *testing.T) {
+		_, err := client.RegisterWebhook(ctx, WebhookRegisterRequest{Topic: "order_created", CallbackURL: "https://example.com"})
+		if err != nil {
+			t.Fatalf("RegisterWebhook error: %v", err)
+		}
+	})
 
-	if err := client.DeleteWebhook(ctx, "wh"); err != nil {
-		t.Fatalf("DeleteWebhook error: %v", err)
-	}
+	t.Run("DeleteWebhook", func(t *testing.T) {
+		if err := client.DeleteWebhook(ctx, "wh"); err != nil {
+			t.Fatalf("DeleteWebhook error: %v", err)
+		}
+	})
 }

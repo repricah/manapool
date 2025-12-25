@@ -8,6 +8,10 @@ import (
 
 // GetInventoryListings retrieves inventory listings by ID.
 func (c *Client) GetInventoryListings(ctx context.Context, ids []string) (*InventoryListingsResponse, error) {
+	if len(ids) == 0 {
+		return &InventoryListingsResponse{}, nil
+	}
+
 	params := url.Values{}
 	for _, id := range ids {
 		if id != "" {
@@ -50,6 +54,10 @@ func (c *Client) GetInventoryListing(ctx context.Context, id string) (*Inventory
 
 // GetInventoryBySKU retrieves an inventory item by TCGPlayer SKU.
 func (c *Client) GetInventoryBySKU(ctx context.Context, sku int) (*InventoryListingResponse, error) {
+	if sku <= 0 {
+		return nil, NewValidationError("sku", "sku must be positive")
+	}
+
 	endpoint := fmt.Sprintf("/inventory/tcgsku/%d", sku)
 	resp, err := c.doRequest(ctx, "GET", endpoint, nil)
 	if err != nil {
@@ -66,6 +74,10 @@ func (c *Client) GetInventoryBySKU(ctx context.Context, sku int) (*InventoryList
 
 // UpdateInventoryBySKU updates an inventory item by TCGPlayer SKU.
 func (c *Client) UpdateInventoryBySKU(ctx context.Context, sku int, update InventoryUpdateRequest) (*InventoryListingResponse, error) {
+	if sku <= 0 {
+		return nil, NewValidationError("sku", "sku must be positive")
+	}
+
 	endpoint := fmt.Sprintf("/inventory/tcgsku/%d", sku)
 	resp, err := c.doJSONRequest(ctx, "PUT", endpoint, nil, update)
 	if err != nil {
@@ -82,6 +94,10 @@ func (c *Client) UpdateInventoryBySKU(ctx context.Context, sku int, update Inven
 
 // DeleteInventoryBySKU deletes an inventory item by TCGPlayer SKU.
 func (c *Client) DeleteInventoryBySKU(ctx context.Context, sku int) (*InventoryListingResponse, error) {
+	if sku <= 0 {
+		return nil, NewValidationError("sku", "sku must be positive")
+	}
+
 	endpoint := fmt.Sprintf("/inventory/tcgsku/%d", sku)
 	resp, err := c.doRequest(ctx, "DELETE", endpoint, nil)
 	if err != nil {
@@ -98,6 +114,10 @@ func (c *Client) DeleteInventoryBySKU(ctx context.Context, sku int) (*InventoryL
 
 // CreateInventoryBulk updates inventory in bulk by SKU.
 func (c *Client) CreateInventoryBulk(ctx context.Context, items []InventoryBulkItemBySKU) (*InventoryItemsResponse, error) {
+	if len(items) == 0 {
+		return nil, NewValidationError("items", "items cannot be empty")
+	}
+
 	resp, err := c.doJSONRequest(ctx, "POST", "/seller/inventory", nil, items)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create inventory bulk: %w", err)
@@ -113,6 +133,10 @@ func (c *Client) CreateInventoryBulk(ctx context.Context, items []InventoryBulkI
 
 // CreateInventoryBulkBySKU updates inventory in bulk by TCGPlayer SKU.
 func (c *Client) CreateInventoryBulkBySKU(ctx context.Context, items []InventoryBulkItemBySKU) (*InventoryItemsResponse, error) {
+	if len(items) == 0 {
+		return nil, NewValidationError("items", "items cannot be empty")
+	}
+
 	resp, err := c.doJSONRequest(ctx, "POST", "/seller/inventory/tcgsku", nil, items)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create inventory bulk by sku: %w", err)
@@ -128,6 +152,10 @@ func (c *Client) CreateInventoryBulkBySKU(ctx context.Context, items []Inventory
 
 // GetSellerInventoryBySKU retrieves a seller inventory item by SKU.
 func (c *Client) GetSellerInventoryBySKU(ctx context.Context, sku int) (*InventoryListingResponse, error) {
+	if sku <= 0 {
+		return nil, NewValidationError("sku", "sku must be positive")
+	}
+
 	endpoint := fmt.Sprintf("/seller/inventory/tcgsku/%d", sku)
 	resp, err := c.doRequest(ctx, "GET", endpoint, nil)
 	if err != nil {
@@ -144,6 +172,10 @@ func (c *Client) GetSellerInventoryBySKU(ctx context.Context, sku int) (*Invento
 
 // UpdateSellerInventoryBySKU updates a seller inventory item by SKU.
 func (c *Client) UpdateSellerInventoryBySKU(ctx context.Context, sku int, update InventoryUpdateRequest) (*InventoryListingResponse, error) {
+	if sku <= 0 {
+		return nil, NewValidationError("sku", "sku must be positive")
+	}
+
 	endpoint := fmt.Sprintf("/seller/inventory/tcgsku/%d", sku)
 	resp, err := c.doJSONRequest(ctx, "PUT", endpoint, nil, update)
 	if err != nil {
@@ -160,6 +192,10 @@ func (c *Client) UpdateSellerInventoryBySKU(ctx context.Context, sku int, update
 
 // DeleteSellerInventoryBySKU deletes a seller inventory item by SKU.
 func (c *Client) DeleteSellerInventoryBySKU(ctx context.Context, sku int) (*InventoryListingResponse, error) {
+	if sku <= 0 {
+		return nil, NewValidationError("sku", "sku must be positive")
+	}
+
 	endpoint := fmt.Sprintf("/seller/inventory/tcgsku/%d", sku)
 	resp, err := c.doRequest(ctx, "DELETE", endpoint, nil)
 	if err != nil {
@@ -174,8 +210,12 @@ func (c *Client) DeleteSellerInventoryBySKU(ctx context.Context, sku int) (*Inve
 	return &listing, nil
 }
 
-// CreateInventoryBulkByProduct updates inventory in bulk by product.
+// CreateInventoryBulkByProduct upserts inventory in bulk by product.
 func (c *Client) CreateInventoryBulkByProduct(ctx context.Context, items []InventoryBulkItemByProduct) (*InventoryItemsResponse, error) {
+	if len(items) == 0 {
+		return nil, NewValidationError("items", "items cannot be empty")
+	}
+
 	resp, err := c.doJSONRequest(ctx, "POST", "/seller/inventory/product", nil, items)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create inventory bulk by product: %w", err)
@@ -249,8 +289,12 @@ func (c *Client) DeleteSellerInventoryByProduct(ctx context.Context, productType
 	return &listing, nil
 }
 
-// CreateInventoryBulkByScryfall updates inventory in bulk by Scryfall ID.
+// CreateInventoryBulkByScryfall upserts inventory in bulk by Scryfall ID.
 func (c *Client) CreateInventoryBulkByScryfall(ctx context.Context, items []InventoryBulkItemByScryfall) (*InventoryItemsResponse, error) {
+	if len(items) == 0 {
+		return nil, NewValidationError("items", "items cannot be empty")
+	}
+
 	resp, err := c.doJSONRequest(ctx, "POST", "/seller/inventory/scryfall_id", nil, items)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create inventory bulk by scryfall: %w", err)
@@ -270,16 +314,7 @@ func (c *Client) GetSellerInventoryByScryfall(ctx context.Context, scryfallID st
 		return nil, NewValidationError("scryfall_id", "scryfallID cannot be empty")
 	}
 
-	params := url.Values{}
-	if opts.LanguageID != "" {
-		params.Add("language_id", opts.LanguageID)
-	}
-	if opts.FinishID != "" {
-		params.Add("finish_id", opts.FinishID)
-	}
-	if opts.ConditionID != "" {
-		params.Add("condition_id", opts.ConditionID)
-	}
+	params := opts.toParams()
 
 	endpoint := fmt.Sprintf("/seller/inventory/scryfall_id/%s", scryfallID)
 	resp, err := c.doRequest(ctx, "GET", endpoint, params)
@@ -301,16 +336,7 @@ func (c *Client) UpdateSellerInventoryByScryfall(ctx context.Context, scryfallID
 		return nil, NewValidationError("scryfall_id", "scryfallID cannot be empty")
 	}
 
-	params := url.Values{}
-	if opts.LanguageID != "" {
-		params.Add("language_id", opts.LanguageID)
-	}
-	if opts.FinishID != "" {
-		params.Add("finish_id", opts.FinishID)
-	}
-	if opts.ConditionID != "" {
-		params.Add("condition_id", opts.ConditionID)
-	}
+	params := opts.toParams()
 
 	endpoint := fmt.Sprintf("/seller/inventory/scryfall_id/%s", scryfallID)
 	resp, err := c.doJSONRequest(ctx, "PUT", endpoint, params, update)
@@ -332,16 +358,7 @@ func (c *Client) DeleteSellerInventoryByScryfall(ctx context.Context, scryfallID
 		return nil, NewValidationError("scryfall_id", "scryfallID cannot be empty")
 	}
 
-	params := url.Values{}
-	if opts.LanguageID != "" {
-		params.Add("language_id", opts.LanguageID)
-	}
-	if opts.FinishID != "" {
-		params.Add("finish_id", opts.FinishID)
-	}
-	if opts.ConditionID != "" {
-		params.Add("condition_id", opts.ConditionID)
-	}
+	params := opts.toParams()
 
 	endpoint := fmt.Sprintf("/seller/inventory/scryfall_id/%s", scryfallID)
 	resp, err := c.doRequest(ctx, "DELETE", endpoint, params)
@@ -357,8 +374,12 @@ func (c *Client) DeleteSellerInventoryByScryfall(ctx context.Context, scryfallID
 	return &listing, nil
 }
 
-// CreateInventoryBulkByTCGPlayerID updates inventory in bulk by TCGPlayer ID.
+// CreateInventoryBulkByTCGPlayerID upserts inventory in bulk by TCGPlayer ID.
 func (c *Client) CreateInventoryBulkByTCGPlayerID(ctx context.Context, items []InventoryBulkItemByTCGPlayerID) (*InventoryItemsResponse, error) {
+	if len(items) == 0 {
+		return nil, NewValidationError("items", "items cannot be empty")
+	}
+
 	resp, err := c.doJSONRequest(ctx, "POST", "/seller/inventory/tcgplayer_id", nil, items)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create inventory bulk by tcgplayer: %w", err)
@@ -374,16 +395,11 @@ func (c *Client) CreateInventoryBulkByTCGPlayerID(ctx context.Context, items []I
 
 // GetSellerInventoryByTCGPlayerID retrieves inventory by TCGPlayer ID.
 func (c *Client) GetSellerInventoryByTCGPlayerID(ctx context.Context, tcgplayerID int, opts InventoryByTCGPlayerOptions) (*InventoryListingResponse, error) {
-	params := url.Values{}
-	if opts.LanguageID != "" {
-		params.Add("language_id", opts.LanguageID)
+	if tcgplayerID <= 0 {
+		return nil, NewValidationError("tcgplayer_id", "tcgplayerID must be positive")
 	}
-	if opts.FinishID != "" {
-		params.Add("finish_id", opts.FinishID)
-	}
-	if opts.ConditionID != "" {
-		params.Add("condition_id", opts.ConditionID)
-	}
+
+	params := opts.toParams()
 
 	endpoint := fmt.Sprintf("/seller/inventory/tcgplayer_id/%d", tcgplayerID)
 	resp, err := c.doRequest(ctx, "GET", endpoint, params)
@@ -401,16 +417,11 @@ func (c *Client) GetSellerInventoryByTCGPlayerID(ctx context.Context, tcgplayerI
 
 // UpdateSellerInventoryByTCGPlayerID updates inventory by TCGPlayer ID.
 func (c *Client) UpdateSellerInventoryByTCGPlayerID(ctx context.Context, tcgplayerID int, opts InventoryByTCGPlayerOptions, update InventoryUpdateRequest) (*InventoryListingResponse, error) {
-	params := url.Values{}
-	if opts.LanguageID != "" {
-		params.Add("language_id", opts.LanguageID)
+	if tcgplayerID <= 0 {
+		return nil, NewValidationError("tcgplayer_id", "tcgplayerID must be positive")
 	}
-	if opts.FinishID != "" {
-		params.Add("finish_id", opts.FinishID)
-	}
-	if opts.ConditionID != "" {
-		params.Add("condition_id", opts.ConditionID)
-	}
+
+	params := opts.toParams()
 
 	endpoint := fmt.Sprintf("/seller/inventory/tcgplayer_id/%d", tcgplayerID)
 	resp, err := c.doJSONRequest(ctx, "PUT", endpoint, params, update)
@@ -428,16 +439,11 @@ func (c *Client) UpdateSellerInventoryByTCGPlayerID(ctx context.Context, tcgplay
 
 // DeleteSellerInventoryByTCGPlayerID deletes inventory by TCGPlayer ID.
 func (c *Client) DeleteSellerInventoryByTCGPlayerID(ctx context.Context, tcgplayerID int, opts InventoryByTCGPlayerOptions) (*InventoryListingResponse, error) {
-	params := url.Values{}
-	if opts.LanguageID != "" {
-		params.Add("language_id", opts.LanguageID)
+	if tcgplayerID <= 0 {
+		return nil, NewValidationError("tcgplayer_id", "tcgplayerID must be positive")
 	}
-	if opts.FinishID != "" {
-		params.Add("finish_id", opts.FinishID)
-	}
-	if opts.ConditionID != "" {
-		params.Add("condition_id", opts.ConditionID)
-	}
+
+	params := opts.toParams()
 
 	endpoint := fmt.Sprintf("/seller/inventory/tcgplayer_id/%d", tcgplayerID)
 	resp, err := c.doRequest(ctx, "DELETE", endpoint, params)

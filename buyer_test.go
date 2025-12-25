@@ -58,68 +58,78 @@ func TestClient_BuyerEndpoints(t *testing.T) {
 	client := NewClient("test-token", "test@example.com", WithBaseURL(server.URL+"/"))
 	ctx := context.Background()
 
-	optimized, err := client.OptimizeCart(ctx, OptimizerRequest{Cart: []OptimizerCartItem{{Type: "mtg_single", Name: "Card", QuantityRequested: 1}}})
-	if err != nil {
-		t.Fatalf("OptimizeCart error: %v", err)
-	}
-	if optimized.Totals.TotalCents != 1500 {
-		t.Fatalf("total cents = %d, want 1500", optimized.Totals.TotalCents)
-	}
+	t.Run("OptimizeCart", func(t *testing.T) {
+		optimized, err := client.OptimizeCart(ctx, OptimizerRequest{Cart: []OptimizerCartItem{{Type: "mtg_single", Name: "Card", QuantityRequested: 1}}})
+		if err != nil {
+			t.Fatalf("OptimizeCart error: %v", err)
+		}
+		if optimized.Totals.TotalCents != 1500 {
+			t.Fatalf("total cents = %d, want 1500", optimized.Totals.TotalCents)
+		}
+	})
 
-	since := Timestamp{Time: time.Date(2024, 4, 1, 5, 44, 13, 0, time.UTC)}
-	orders, err := client.GetBuyerOrders(ctx, BuyerOrdersOptions{Since: &since, Limit: 2, Offset: 0})
-	if err != nil {
-		t.Fatalf("GetBuyerOrders error: %v", err)
-	}
-	if len(orders.Orders) != 1 {
-		t.Fatalf("orders count = %d, want 1", len(orders.Orders))
-	}
+	t.Run("GetBuyerOrders", func(t *testing.T) {
+		since := Timestamp{Time: time.Date(2024, 4, 1, 5, 44, 13, 0, time.UTC)}
+		orders, err := client.GetBuyerOrders(ctx, BuyerOrdersOptions{Since: &since, Limit: 2, Offset: 0})
+		if err != nil {
+			t.Fatalf("GetBuyerOrders error: %v", err)
+		}
+		if len(orders.Orders) != 1 {
+			t.Fatalf("orders count = %d, want 1", len(orders.Orders))
+		}
+	})
 
-	order, err := client.GetBuyerOrder(ctx, "abc")
-	if err != nil {
-		t.Fatalf("GetBuyerOrder error: %v", err)
-	}
-	if order.Order.OrderNumber != "1234" {
-		t.Fatalf("order number = %q, want 1234", order.Order.OrderNumber)
-	}
+	t.Run("GetBuyerOrder", func(t *testing.T) {
+		order, err := client.GetBuyerOrder(ctx, "abc")
+		if err != nil {
+			t.Fatalf("GetBuyerOrder error: %v", err)
+		}
+		if order.Order.OrderNumber != "1234" {
+			t.Fatalf("order number = %q, want 1234", order.Order.OrderNumber)
+		}
+	})
 
-	pending, err := client.CreatePendingOrder(ctx, PendingOrderRequest{LineItems: []PendingOrderLineItem{{InventoryID: "inv", QuantitySelected: 1}}})
-	if err != nil {
-		t.Fatalf("CreatePendingOrder error: %v", err)
-	}
-	if pending.Status != "pending" {
-		t.Fatalf("pending status = %q, want pending", pending.Status)
-	}
+	t.Run("PendingOrders", func(t *testing.T) {
+		pending, err := client.CreatePendingOrder(ctx, PendingOrderRequest{LineItems: []PendingOrderLineItem{{InventoryID: "inv", QuantitySelected: 1}}})
+		if err != nil {
+			t.Fatalf("CreatePendingOrder error: %v", err)
+		}
+		if pending.Status != "pending" {
+			t.Fatalf("pending status = %q, want pending", pending.Status)
+		}
 
-	pending, err = client.GetPendingOrder(ctx, "123")
-	if err != nil {
-		t.Fatalf("GetPendingOrder error: %v", err)
-	}
-	if pending.ID != "123" {
-		t.Fatalf("pending id = %q, want 123", pending.ID)
-	}
+		pending, err = client.GetPendingOrder(ctx, "123")
+		if err != nil {
+			t.Fatalf("GetPendingOrder error: %v", err)
+		}
+		if pending.ID != "123" {
+			t.Fatalf("pending id = %q, want 123", pending.ID)
+		}
 
-	pending, err = client.UpdatePendingOrder(ctx, "123", PendingOrderRequest{LineItems: []PendingOrderLineItem{{InventoryID: "inv", QuantitySelected: 2}}})
-	if err != nil {
-		t.Fatalf("UpdatePendingOrder error: %v", err)
-	}
-	if pending.Totals.SubtotalCents != 2000 {
-		t.Fatalf("pending subtotal = %d, want 2000", pending.Totals.SubtotalCents)
-	}
+		pending, err = client.UpdatePendingOrder(ctx, "123", PendingOrderRequest{LineItems: []PendingOrderLineItem{{InventoryID: "inv", QuantitySelected: 2}}})
+		if err != nil {
+			t.Fatalf("UpdatePendingOrder error: %v", err)
+		}
+		if pending.Totals.SubtotalCents != 2000 {
+			t.Fatalf("pending subtotal = %d, want 2000", pending.Totals.SubtotalCents)
+		}
 
-	pending, err = client.PurchasePendingOrder(ctx, "123", PurchasePendingOrderRequest{PaymentMethod: "user_credit", BillingAddress: Address{Line1: "line", City: "City", State: "CA", PostalCode: "12345", Country: "US"}, ShippingAddress: Address{Line1: "line", City: "City", State: "CA", PostalCode: "12345", Country: "US"}})
-	if err != nil {
-		t.Fatalf("PurchasePendingOrder error: %v", err)
-	}
-	if pending.Status != "completed" {
-		t.Fatalf("pending status = %q, want completed", pending.Status)
-	}
+		pending, err = client.PurchasePendingOrder(ctx, "123", PurchasePendingOrderRequest{PaymentMethod: "user_credit", BillingAddress: Address{Line1: "line", City: "City", State: "CA", PostalCode: "12345", Country: "US"}, ShippingAddress: Address{Line1: "line", City: "City", State: "CA", PostalCode: "12345", Country: "US"}})
+		if err != nil {
+			t.Fatalf("PurchasePendingOrder error: %v", err)
+		}
+		if pending.Status != "completed" {
+			t.Fatalf("pending status = %q, want completed", pending.Status)
+		}
+	})
 
-	credit, err := client.GetBuyerCredit(ctx)
-	if err != nil {
-		t.Fatalf("GetBuyerCredit error: %v", err)
-	}
-	if credit.UserCreditCents != 500 {
-		t.Fatalf("credit = %d, want 500", credit.UserCreditCents)
-	}
+	t.Run("GetBuyerCredit", func(t *testing.T) {
+		credit, err := client.GetBuyerCredit(ctx)
+		if err != nil {
+			t.Fatalf("GetBuyerCredit error: %v", err)
+		}
+		if credit.UserCreditCents != 500 {
+			t.Fatalf("credit = %d, want 500", credit.UserCreditCents)
+		}
+	})
 }

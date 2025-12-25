@@ -37,27 +37,33 @@ func TestClient_GetPricesEndpoints(t *testing.T) {
 	client := NewClient("test-token", "test@example.com", WithBaseURL(server.URL+"/"))
 	ctx := context.Background()
 
-	singles, err := client.GetSinglesPrices(ctx)
-	if err != nil {
-		t.Fatalf("GetSinglesPrices error: %v", err)
-	}
-	if len(singles.Data) != 1 {
-		t.Fatalf("singles count = %d, want 1", len(singles.Data))
-	}
+	t.Run("GetSinglesPrices", func(t *testing.T) {
+		singles, err := client.GetSinglesPrices(ctx)
+		if err != nil {
+			t.Fatalf("GetSinglesPrices error: %v", err)
+		}
+		if len(singles.Data) != 1 {
+			t.Fatalf("singles count = %d, want 1", len(singles.Data))
+		}
+	})
 
-	variants, err := client.GetVariantPrices(ctx)
-	if err != nil {
-		t.Fatalf("GetVariantPrices error: %v", err)
-	}
-	if len(variants.Data) != 1 {
-		t.Fatalf("variants count = %d, want 1", len(variants.Data))
-	}
+	t.Run("GetVariantPrices", func(t *testing.T) {
+		variants, err := client.GetVariantPrices(ctx)
+		if err != nil {
+			t.Fatalf("GetVariantPrices error: %v", err)
+		}
+		if len(variants.Data) != 1 {
+			t.Fatalf("variants count = %d, want 1", len(variants.Data))
+		}
+	})
 
-	sealed, err := client.GetSealedPrices(ctx)
-	if err != nil {
-		t.Fatalf("GetSealedPrices error: %v", err)
-	}
-	if len(sealed.Data) != 1 {
-		t.Fatalf("sealed count = %d, want 1", len(sealed.Data))
-	}
+	t.Run("GetSealedPrices", func(t *testing.T) {
+		sealed, err := client.GetSealedPrices(ctx)
+		if err != nil {
+			t.Fatalf("GetSealedPrices error: %v", err)
+		}
+		if len(sealed.Data) != 1 {
+			t.Fatalf("sealed count = %d, want 1", len(sealed.Data))
+		}
+	})
 }

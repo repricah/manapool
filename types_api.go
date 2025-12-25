@@ -1,5 +1,7 @@
 package manapool
 
+import "net/url"
+
 // PricesMeta describes price export metadata.
 type PricesMeta struct {
 	AsOf Timestamp `json:"as_of"`
@@ -402,11 +404,39 @@ type InventoryByScryfallOptions struct {
 	ConditionID string
 }
 
+func (opts InventoryByScryfallOptions) toParams() url.Values {
+	params := url.Values{}
+	if opts.LanguageID != "" {
+		params.Add("language_id", opts.LanguageID)
+	}
+	if opts.FinishID != "" {
+		params.Add("finish_id", opts.FinishID)
+	}
+	if opts.ConditionID != "" {
+		params.Add("condition_id", opts.ConditionID)
+	}
+	return params
+}
+
 // InventoryByTCGPlayerOptions defines lookup options by TCGPlayer ID.
 type InventoryByTCGPlayerOptions struct {
 	LanguageID  string
 	FinishID    string
 	ConditionID string
+}
+
+func (opts InventoryByTCGPlayerOptions) toParams() url.Values {
+	params := url.Values{}
+	if opts.LanguageID != "" {
+		params.Add("language_id", opts.LanguageID)
+	}
+	if opts.FinishID != "" {
+		params.Add("finish_id", opts.FinishID)
+	}
+	if opts.ConditionID != "" {
+		params.Add("condition_id", opts.ConditionID)
+	}
+	return params
 }
 
 // OrdersOptions defines filters for order listing endpoints.

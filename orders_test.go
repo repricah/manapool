@@ -55,51 +55,66 @@ func TestClient_OrderEndpoints(t *testing.T) {
 	label := "1234"
 	since := Timestamp{Time: time.Date(2024, 4, 1, 5, 44, 13, 0, time.UTC)}
 	unfulfilled := true
-	orders, err := client.GetOrders(ctx, OrdersOptions{Since: &since, Label: label, IsUnfulfilled: &unfulfilled})
-	if err != nil {
-		t.Fatalf("GetOrders error: %v", err)
-	}
-	if len(orders.Orders) != 1 {
-		t.Fatalf("orders count = %d, want 1", len(orders.Orders))
-	}
+	t.Run("GetOrders", func(t *testing.T) {
+		orders, err := client.GetOrders(ctx, OrdersOptions{Since: &since, Label: label, IsUnfulfilled: &unfulfilled})
+		if err != nil {
+			t.Fatalf("GetOrders error: %v", err)
+		}
+		if len(orders.Orders) != 1 {
+			t.Fatalf("orders count = %d, want 1", len(orders.Orders))
+		}
+	})
 
-	order, err := client.GetOrder(ctx, "abc")
-	if err != nil {
-		t.Fatalf("GetOrder error: %v", err)
-	}
-	if order.Order.Label != "1234" {
-		t.Fatalf("order label = %q, want 1234", order.Order.Label)
-	}
+	t.Run("GetOrder", func(t *testing.T) {
+		order, err := client.GetOrder(ctx, "abc")
+		if err != nil {
+			t.Fatalf("GetOrder error: %v", err)
+		}
+		if order.Order.Label != "1234" {
+			t.Fatalf("order label = %q, want 1234", order.Order.Label)
+		}
+	})
 
-	status := "shipped"
-	fulfillment, err := client.UpdateOrderFulfillment(ctx, "abc", OrderFulfillmentRequest{Status: &status})
-	if err != nil {
-		t.Fatalf("UpdateOrderFulfillment error: %v", err)
-	}
-	if fulfillment.Fulfillment.Status == nil || *fulfillment.Fulfillment.Status != "shipped" {
-		t.Fatalf("fulfillment status mismatch")
-	}
+	t.Run("UpdateOrderFulfillment", func(t *testing.T) {
+		status := "shipped"
+		fulfillment, err := client.UpdateOrderFulfillment(ctx, "abc", OrderFulfillmentRequest{Status: &status})
+		if err != nil {
+			t.Fatalf("UpdateOrderFulfillment error: %v", err)
+		}
+		if fulfillment.Fulfillment.Status == nil || *fulfillment.Fulfillment.Status != "shipped" {
+			t.Fatalf("fulfillment status mismatch")
+		}
+	})
 
-	_, err = client.GetSellerOrders(ctx, OrdersOptions{})
-	if err != nil {
-		t.Fatalf("GetSellerOrders error: %v", err)
-	}
+	t.Run("GetSellerOrders", func(t *testing.T) {
+		_, err := client.GetSellerOrders(ctx, OrdersOptions{})
+		if err != nil {
+			t.Fatalf("GetSellerOrders error: %v", err)
+		}
+	})
 
-	_, err = client.GetSellerOrder(ctx, "abc")
-	if err != nil {
-		t.Fatalf("GetSellerOrder error: %v", err)
-	}
+	t.Run("GetSellerOrder", func(t *testing.T) {
+		_, err := client.GetSellerOrder(ctx, "abc")
+		if err != nil {
+			t.Fatalf("GetSellerOrder error: %v", err)
+		}
+	})
 
-	_, err = client.UpdateSellerOrderFulfillment(ctx, "abc", OrderFulfillmentRequest{Status: &status})
-	if err != nil {
-		t.Fatalf("UpdateSellerOrderFulfillment error: %v", err)
-	}
+	t.Run("UpdateSellerOrderFulfillment", func(t *testing.T) {
+		status := "shipped"
+		_, err := client.UpdateSellerOrderFulfillment(ctx, "abc", OrderFulfillmentRequest{Status: &status})
+		if err != nil {
+			t.Fatalf("UpdateSellerOrderFulfillment error: %v", err)
+		}
+	})
 
-	reports, err := client.GetSellerOrderReports(ctx, "abc")
-	if err != nil {
-		t.Fatalf("GetSellerOrderReports error: %v", err)
-	}
-	if len(reports.Reports) != 1 {
-		t.Fatalf("reports count = %d, want 1", len(reports.Reports))
-	}
+	t.Run("GetSellerOrderReports", func(t *testing.T) {
+		reports, err := client.GetSellerOrderReports(ctx, "abc")
+		if err != nil {
+			t.Fatalf("GetSellerOrderReports error: %v", err)
+		}
+		if len(reports.Reports) != 1 {
+			t.Fatalf("reports count = %d, want 1", len(reports.Reports))
+		}
+	})
 }

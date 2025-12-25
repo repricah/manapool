@@ -7,6 +7,8 @@ import (
 	"mime/multipart"
 )
 
+const defaultApplicationFilename = "application.zip"
+
 // SubmitJobApplication submits a job application.
 func (c *Client) SubmitJobApplication(ctx context.Context, req JobApplicationRequest) (*JobApplicationResponse, error) {
 	if req.FirstName == "" || req.LastName == "" || req.Email == "" || len(req.Application) == 0 {
@@ -14,7 +16,7 @@ func (c *Client) SubmitJobApplication(ctx context.Context, req JobApplicationReq
 	}
 	filename := req.ApplicationFilename
 	if filename == "" {
-		filename = "application.zip"
+		filename = defaultApplicationFilename
 	}
 
 	var body bytes.Buffer

@@ -117,125 +117,139 @@ func TestClient_InventoryListingEndpoints(t *testing.T) {
 	client := NewClient("test-token", "test@example.com", WithBaseURL(server.URL+"/"))
 	ctx := context.Background()
 
-	listings, err := client.GetInventoryListings(ctx, []string{"inv123"})
-	if err != nil {
-		t.Fatalf("GetInventoryListings error: %v", err)
-	}
-	if len(listings.InventoryItems) != 1 {
-		t.Fatalf("inventory items = %d, want 1", len(listings.InventoryItems))
-	}
+	t.Run("GetInventoryListings", func(t *testing.T) {
+		listings, err := client.GetInventoryListings(ctx, []string{"inv123"})
+		if err != nil {
+			t.Fatalf("GetInventoryListings error: %v", err)
+		}
+		if len(listings.InventoryItems) != 1 {
+			t.Fatalf("inventory items = %d, want 1", len(listings.InventoryItems))
+		}
 
-	item, err := client.GetInventoryListing(ctx, "inv123")
-	if err != nil {
-		t.Fatalf("GetInventoryListing error: %v", err)
-	}
-	if item.InventoryItem.ID != "inv123" {
-		t.Fatalf("inventory id = %s, want inv123", item.InventoryItem.ID)
-	}
+		item, err := client.GetInventoryListing(ctx, "inv123")
+		if err != nil {
+			t.Fatalf("GetInventoryListing error: %v", err)
+		}
+		if item.InventoryItem.ID != "inv123" {
+			t.Fatalf("inventory id = %s, want inv123", item.InventoryItem.ID)
+		}
+	})
 
-	_, err = client.GetInventoryBySKU(ctx, 123456)
-	if err != nil {
-		t.Fatalf("GetInventoryBySKU error: %v", err)
-	}
+	t.Run("InventoryBySKU", func(t *testing.T) {
+		_, err := client.GetInventoryBySKU(ctx, 123456)
+		if err != nil {
+			t.Fatalf("GetInventoryBySKU error: %v", err)
+		}
 
-	_, err = client.UpdateInventoryBySKU(ctx, 123456, InventoryUpdateRequest{PriceCents: 500, Quantity: 3})
-	if err != nil {
-		t.Fatalf("UpdateInventoryBySKU error: %v", err)
-	}
+		_, err = client.UpdateInventoryBySKU(ctx, 123456, InventoryUpdateRequest{PriceCents: 500, Quantity: 3})
+		if err != nil {
+			t.Fatalf("UpdateInventoryBySKU error: %v", err)
+		}
 
-	_, err = client.DeleteInventoryBySKU(ctx, 123456)
-	if err != nil {
-		t.Fatalf("DeleteInventoryBySKU error: %v", err)
-	}
+		_, err = client.DeleteInventoryBySKU(ctx, 123456)
+		if err != nil {
+			t.Fatalf("DeleteInventoryBySKU error: %v", err)
+		}
+	})
 
-	_, err = client.CreateInventoryBulk(ctx, []InventoryBulkItemBySKU{{TCGPlayerSKU: 123456, PriceCents: 100, Quantity: 1}})
-	if err != nil {
-		t.Fatalf("CreateInventoryBulk error: %v", err)
-	}
+	t.Run("BulkUpdates", func(t *testing.T) {
+		_, err := client.CreateInventoryBulk(ctx, []InventoryBulkItemBySKU{{TCGPlayerSKU: 123456, PriceCents: 100, Quantity: 1}})
+		if err != nil {
+			t.Fatalf("CreateInventoryBulk error: %v", err)
+		}
 
-	_, err = client.CreateInventoryBulkBySKU(ctx, []InventoryBulkItemBySKU{{TCGPlayerSKU: 123456, PriceCents: 100, Quantity: 1}})
-	if err != nil {
-		t.Fatalf("CreateInventoryBulkBySKU error: %v", err)
-	}
+		_, err = client.CreateInventoryBulkBySKU(ctx, []InventoryBulkItemBySKU{{TCGPlayerSKU: 123456, PriceCents: 100, Quantity: 1}})
+		if err != nil {
+			t.Fatalf("CreateInventoryBulkBySKU error: %v", err)
+		}
 
-	_, err = client.GetSellerInventoryBySKU(ctx, 123456)
-	if err != nil {
-		t.Fatalf("GetSellerInventoryBySKU error: %v", err)
-	}
+		_, err = client.CreateInventoryBulkByProduct(ctx, []InventoryBulkItemByProduct{{ProductType: "mtg_single", ProductID: "prod456", PriceCents: 100, Quantity: 1}})
+		if err != nil {
+			t.Fatalf("CreateInventoryBulkByProduct error: %v", err)
+		}
 
-	_, err = client.UpdateSellerInventoryBySKU(ctx, 123456, InventoryUpdateRequest{PriceCents: 200, Quantity: 2})
-	if err != nil {
-		t.Fatalf("UpdateSellerInventoryBySKU error: %v", err)
-	}
+		_, err = client.CreateInventoryBulkByScryfall(ctx, []InventoryBulkItemByScryfall{{ScryfallID: "abc123", LanguageID: "EN", FinishID: "NF", ConditionID: "NM", PriceCents: 100, Quantity: 1}})
+		if err != nil {
+			t.Fatalf("CreateInventoryBulkByScryfall error: %v", err)
+		}
 
-	_, err = client.DeleteSellerInventoryBySKU(ctx, 123456)
-	if err != nil {
-		t.Fatalf("DeleteSellerInventoryBySKU error: %v", err)
-	}
+		finish := "NF"
+		condition := "NM"
+		_, err = client.CreateInventoryBulkByTCGPlayerID(ctx, []InventoryBulkItemByTCGPlayerID{{TCGPlayerID: 4841, LanguageID: "EN", FinishID: &finish, ConditionID: &condition, PriceCents: 100, Quantity: 1}})
+		if err != nil {
+			t.Fatalf("CreateInventoryBulkByTCGPlayerID error: %v", err)
+		}
+	})
 
-	_, err = client.CreateInventoryBulkByProduct(ctx, []InventoryBulkItemByProduct{{ProductType: "mtg_single", ProductID: "prod456", PriceCents: 100, Quantity: 1}})
-	if err != nil {
-		t.Fatalf("CreateInventoryBulkByProduct error: %v", err)
-	}
+	t.Run("SellerInventoryBySKU", func(t *testing.T) {
+		_, err := client.GetSellerInventoryBySKU(ctx, 123456)
+		if err != nil {
+			t.Fatalf("GetSellerInventoryBySKU error: %v", err)
+		}
 
-	_, err = client.GetSellerInventoryByProduct(ctx, "mtg_single", "prod456")
-	if err != nil {
-		t.Fatalf("GetSellerInventoryByProduct error: %v", err)
-	}
+		_, err = client.UpdateSellerInventoryBySKU(ctx, 123456, InventoryUpdateRequest{PriceCents: 200, Quantity: 2})
+		if err != nil {
+			t.Fatalf("UpdateSellerInventoryBySKU error: %v", err)
+		}
 
-	_, err = client.UpdateSellerInventoryByProduct(ctx, "mtg_single", "prod456", InventoryUpdateRequest{PriceCents: 200, Quantity: 1})
-	if err != nil {
-		t.Fatalf("UpdateSellerInventoryByProduct error: %v", err)
-	}
+		_, err = client.DeleteSellerInventoryBySKU(ctx, 123456)
+		if err != nil {
+			t.Fatalf("DeleteSellerInventoryBySKU error: %v", err)
+		}
+	})
 
-	_, err = client.DeleteSellerInventoryByProduct(ctx, "mtg_single", "prod456")
-	if err != nil {
-		t.Fatalf("DeleteSellerInventoryByProduct error: %v", err)
-	}
+	t.Run("SellerInventoryByProduct", func(t *testing.T) {
+		_, err := client.GetSellerInventoryByProduct(ctx, "mtg_single", "prod456")
+		if err != nil {
+			t.Fatalf("GetSellerInventoryByProduct error: %v", err)
+		}
 
-	_, err = client.CreateInventoryBulkByScryfall(ctx, []InventoryBulkItemByScryfall{{ScryfallID: "abc123", LanguageID: "EN", FinishID: "NF", ConditionID: "NM", PriceCents: 100, Quantity: 1}})
-	if err != nil {
-		t.Fatalf("CreateInventoryBulkByScryfall error: %v", err)
-	}
+		_, err = client.UpdateSellerInventoryByProduct(ctx, "mtg_single", "prod456", InventoryUpdateRequest{PriceCents: 200, Quantity: 1})
+		if err != nil {
+			t.Fatalf("UpdateSellerInventoryByProduct error: %v", err)
+		}
 
-	opts := InventoryByScryfallOptions{LanguageID: "EN", FinishID: "NF", ConditionID: "NM"}
-	_, err = client.GetSellerInventoryByScryfall(ctx, "abc123", opts)
-	if err != nil {
-		t.Fatalf("GetSellerInventoryByScryfall error: %v", err)
-	}
+		_, err = client.DeleteSellerInventoryByProduct(ctx, "mtg_single", "prod456")
+		if err != nil {
+			t.Fatalf("DeleteSellerInventoryByProduct error: %v", err)
+		}
+	})
 
-	_, err = client.UpdateSellerInventoryByScryfall(ctx, "abc123", opts, InventoryUpdateRequest{PriceCents: 200, Quantity: 2})
-	if err != nil {
-		t.Fatalf("UpdateSellerInventoryByScryfall error: %v", err)
-	}
+	t.Run("SellerInventoryByScryfall", func(t *testing.T) {
+		opts := InventoryByScryfallOptions{LanguageID: "EN", FinishID: "NF", ConditionID: "NM"}
+		_, err := client.GetSellerInventoryByScryfall(ctx, "abc123", opts)
+		if err != nil {
+			t.Fatalf("GetSellerInventoryByScryfall error: %v", err)
+		}
 
-	_, err = client.DeleteSellerInventoryByScryfall(ctx, "abc123", opts)
-	if err != nil {
-		t.Fatalf("DeleteSellerInventoryByScryfall error: %v", err)
-	}
+		_, err = client.UpdateSellerInventoryByScryfall(ctx, "abc123", opts, InventoryUpdateRequest{PriceCents: 200, Quantity: 2})
+		if err != nil {
+			t.Fatalf("UpdateSellerInventoryByScryfall error: %v", err)
+		}
 
-	finish := "NF"
-	condition := "NM"
-	_, err = client.CreateInventoryBulkByTCGPlayerID(ctx, []InventoryBulkItemByTCGPlayerID{{TCGPlayerID: 4841, LanguageID: "EN", FinishID: &finish, ConditionID: &condition, PriceCents: 100, Quantity: 1}})
-	if err != nil {
-		t.Fatalf("CreateInventoryBulkByTCGPlayerID error: %v", err)
-	}
+		_, err = client.DeleteSellerInventoryByScryfall(ctx, "abc123", opts)
+		if err != nil {
+			t.Fatalf("DeleteSellerInventoryByScryfall error: %v", err)
+		}
+	})
 
-	optsTCG := InventoryByTCGPlayerOptions{LanguageID: "EN", FinishID: "NF", ConditionID: "NM"}
-	_, err = client.GetSellerInventoryByTCGPlayerID(ctx, 4841, optsTCG)
-	if err != nil {
-		t.Fatalf("GetSellerInventoryByTCGPlayerID error: %v", err)
-	}
+	t.Run("SellerInventoryByTCGPlayerID", func(t *testing.T) {
+		optsTCG := InventoryByTCGPlayerOptions{LanguageID: "EN", FinishID: "NF", ConditionID: "NM"}
+		_, err := client.GetSellerInventoryByTCGPlayerID(ctx, 4841, optsTCG)
+		if err != nil {
+			t.Fatalf("GetSellerInventoryByTCGPlayerID error: %v", err)
+		}
 
-	_, err = client.UpdateSellerInventoryByTCGPlayerID(ctx, 4841, optsTCG, InventoryUpdateRequest{PriceCents: 200, Quantity: 2})
-	if err != nil {
-		t.Fatalf("UpdateSellerInventoryByTCGPlayerID error: %v", err)
-	}
+		_, err = client.UpdateSellerInventoryByTCGPlayerID(ctx, 4841, optsTCG, InventoryUpdateRequest{PriceCents: 200, Quantity: 2})
+		if err != nil {
+			t.Fatalf("UpdateSellerInventoryByTCGPlayerID error: %v", err)
+		}
 
-	_, err = client.DeleteSellerInventoryByTCGPlayerID(ctx, 4841, optsTCG)
-	if err != nil {
-		t.Fatalf("DeleteSellerInventoryByTCGPlayerID error: %v", err)
-	}
+		_, err = client.DeleteSellerInventoryByTCGPlayerID(ctx, 4841, optsTCG)
+		if err != nil {
+			t.Fatalf("DeleteSellerInventoryByTCGPlayerID error: %v", err)
+		}
+	})
 
 	if !strings.Contains(inventoryJSON, "Black Lotus") {
 		t.Fatalf("expected inventory json to include card name")

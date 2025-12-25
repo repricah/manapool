@@ -41,28 +41,34 @@ func TestClient_MiscEndpoints(t *testing.T) {
 	client := NewClient("test-token", "test@example.com", WithBaseURL(server.URL+"/"))
 	ctx := context.Background()
 
-	deck, err := client.CreateDeck(ctx, DeckCreateRequest{CommanderNames: []string{"Atraxa"}, OtherCards: []OtherCard{{Name: "Lightning Bolt", Quantity: 4}}})
-	if err != nil {
-		t.Fatalf("CreateDeck error: %v", err)
-	}
-	if !deck.Valid {
-		t.Fatalf("expected deck to be valid")
-	}
+	t.Run("CreateDeck", func(t *testing.T) {
+		deck, err := client.CreateDeck(ctx, DeckCreateRequest{CommanderNames: []string{"Atraxa"}, OtherCards: []OtherCard{{Name: "Lightning Bolt", Quantity: 4}}})
+		if err != nil {
+			t.Fatalf("CreateDeck error: %v", err)
+		}
+		if !deck.Valid {
+			t.Fatalf("expected deck to be valid")
+		}
+	})
 
-	info, err := client.GetCardInfo(ctx, CardInfoRequest{CardNames: []string{"Lightning Bolt"}})
-	if err != nil {
-		t.Fatalf("GetCardInfo error: %v", err)
-	}
-	if len(info.Cards) != 1 {
-		t.Fatalf("card info count = %d, want 1", len(info.Cards))
-	}
+	t.Run("GetCardInfo", func(t *testing.T) {
+		info, err := client.GetCardInfo(ctx, CardInfoRequest{CardNames: []string{"Lightning Bolt"}})
+		if err != nil {
+			t.Fatalf("GetCardInfo error: %v", err)
+		}
+		if len(info.Cards) != 1 {
+			t.Fatalf("card info count = %d, want 1", len(info.Cards))
+		}
+	})
 
-	application := []byte("fake zip")
-	job, err := client.SubmitJobApplication(ctx, JobApplicationRequest{FirstName: "John", LastName: "Doe", Email: "john@example.com", Application: application, ApplicationFilename: "app.zip"})
-	if err != nil {
-		t.Fatalf("SubmitJobApplication error: %v", err)
-	}
-	if !job.Success {
-		t.Fatalf("job application success = false, want true")
-	}
+	t.Run("SubmitJobApplication", func(t *testing.T) {
+		application := []byte("fake zip")
+		job, err := client.SubmitJobApplication(ctx, JobApplicationRequest{FirstName: "John", LastName: "Doe", Email: "john@example.com", Application: application, ApplicationFilename: "app.zip"})
+		if err != nil {
+			t.Fatalf("SubmitJobApplication error: %v", err)
+		}
+		if !job.Success {
+			t.Fatalf("job application success = false, want true")
+		}
+	})
 }
