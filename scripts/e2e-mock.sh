@@ -14,7 +14,7 @@ request() {
     echo "    payload: ${data}"
   fi
 
-  curl -sS -o /tmp/e2e-body.json -w "    status: %{http_code}\n" \
+  curl -sS --fail-with-body -o /tmp/e2e-body.json -w "    status: %{http_code}\n" \
     -X "${method}" \
     "$@" \
     ${data:+-d "$data"} \
@@ -22,12 +22,19 @@ request() {
   echo "    body: $(cat /tmp/e2e-body.json)"
 }
 
+ready=false
 for _ in {1..20}; do
   if curl -sf "$base_url/prices/singles" >/dev/null; then
+    ready=true
     break
   fi
   sleep 1
 done
+
+if [[ "${ready}" != "true" ]]; then
+  echo "Prism mock did not become ready at ${base_url}"
+  exit 1
+fi
 
 request GET "$base_url/prices/singles"
 request GET "$base_url/prices/variants"
