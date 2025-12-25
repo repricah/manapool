@@ -437,20 +437,4 @@ MIT License - see LICENSE file for details
 
 ## Changelog
 
-### v0.2.0 (2025-12-23)
-
-- 🔄 Rename module to `github.com/repricah/manapool`
-- ⚖️ Use neutral tone in documentation
-- 👤 Corrected authorship to `jblotus`
-
-### v0.2.0 (2025-01-28)
-
-- 🎉 Initial pre-release
-- ✅ Seller account endpoint (`GetSellerAccount`)
-- ✅ Seller inventory endpoints (`GetSellerInventory`, `GetInventoryByTCGPlayerID`, `IterateInventory`)
-- ✅ Test coverage (96.5%)
-- ✅ Rate limiting and retries
-- ✅ Context support for all operations
-- ✅ Structured error handling with helper methods
-- ✅ Configurable client options
-- ⚠️ API may change before v1.0.0
+See [GitHub Releases](https://github.com/repricah/manapool/releases) for version history and detailed changelog.
