@@ -21,6 +21,15 @@ jobs:
       with:
         go-version: stable
     - run: go test -v ./...
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 20
+    - name: Run OpenAPI mock e2e checks
+      run: |
+        npx @stoplight/prism-cli@5 mock openapi.json -p 4010 --quiet &
+        PRISM_PID=$!
+        trap "kill $PRISM_PID" EXIT
+        ./scripts/e2e-mock.sh http://127.0.0.1:4010
 
   release:
     needs: test
