@@ -112,7 +112,7 @@ func (c *Client) DeleteInventoryBySKU(ctx context.Context, sku int) (*InventoryL
 	return &listing, nil
 }
 
-// CreateInventoryBulk updates inventory in bulk by SKU.
+// CreateInventoryBulk creates or updates (upserts) inventory in bulk by SKU.
 func (c *Client) CreateInventoryBulk(ctx context.Context, items []InventoryBulkItemBySKU) (*InventoryItemsResponse, error) {
 	if len(items) == 0 {
 		return nil, NewValidationError("items", "items cannot be empty")
@@ -131,7 +131,7 @@ func (c *Client) CreateInventoryBulk(ctx context.Context, items []InventoryBulkI
 	return &listing, nil
 }
 
-// CreateInventoryBulkBySKU updates inventory in bulk by TCGPlayer SKU.
+// CreateInventoryBulkBySKU creates or updates (upserts) inventory in bulk by TCGPlayer SKU.
 func (c *Client) CreateInventoryBulkBySKU(ctx context.Context, items []InventoryBulkItemBySKU) (*InventoryItemsResponse, error) {
 	if len(items) == 0 {
 		return nil, NewValidationError("items", "items cannot be empty")
@@ -210,7 +210,7 @@ func (c *Client) DeleteSellerInventoryBySKU(ctx context.Context, sku int) (*Inve
 	return &listing, nil
 }
 
-// CreateInventoryBulkByProduct upserts inventory in bulk by product.
+// CreateInventoryBulkByProduct creates or updates (upserts) inventory in bulk by product.
 func (c *Client) CreateInventoryBulkByProduct(ctx context.Context, items []InventoryBulkItemByProduct) (*InventoryItemsResponse, error) {
 	if len(items) == 0 {
 		return nil, NewValidationError("items", "items cannot be empty")
@@ -289,7 +289,7 @@ func (c *Client) DeleteSellerInventoryByProduct(ctx context.Context, productType
 	return &listing, nil
 }
 
-// CreateInventoryBulkByScryfall upserts inventory in bulk by Scryfall ID.
+// CreateInventoryBulkByScryfall creates or updates (upserts) inventory in bulk by Scryfall ID.
 func (c *Client) CreateInventoryBulkByScryfall(ctx context.Context, items []InventoryBulkItemByScryfall) (*InventoryItemsResponse, error) {
 	if len(items) == 0 {
 		return nil, NewValidationError("items", "items cannot be empty")
@@ -374,7 +374,7 @@ func (c *Client) DeleteSellerInventoryByScryfall(ctx context.Context, scryfallID
 	return &listing, nil
 }
 
-// CreateInventoryBulkByTCGPlayerID upserts inventory in bulk by TCGPlayer ID.
+// CreateInventoryBulkByTCGPlayerID creates or updates (upserts) inventory in bulk by TCGPlayer ID.
 func (c *Client) CreateInventoryBulkByTCGPlayerID(ctx context.Context, items []InventoryBulkItemByTCGPlayerID) (*InventoryItemsResponse, error) {
 	if len(items) == 0 {
 		return nil, NewValidationError("items", "items cannot be empty")

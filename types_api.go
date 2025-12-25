@@ -617,7 +617,7 @@ type CardInfo struct {
 	Finishes          []string `json:"finishes"`
 	Text              *string  `json:"text"`
 	ColorIdentity     []string `json:"color_identity"`
-	EDHRECSaltiness   *string  `json:"edhrecSaltiness"`
+	EdhrecSaltiness   *string  `json:"edhrecSaltiness"`
 	Power             *string  `json:"power"`
 	Defense           *string  `json:"defense"`
 	ManaCost          *string  `json:"mana_cost"`
