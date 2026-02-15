@@ -149,6 +149,9 @@ func TestInventoryOptions_Validate(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			// Capture initial limit to test default behavior
+			initialLimit := tt.opts.Limit
+			
 			err := tt.opts.Validate()
 
 			if (err != nil) != tt.wantErr {
@@ -162,10 +165,10 @@ func TestInventoryOptions_Validate(t *testing.T) {
 				}
 			}
 
-			// Check that default limit is set
-			if !tt.wantErr && tt.opts.Limit == 0 {
+			// Check that default limit is set when initial limit was 0
+			if !tt.wantErr && initialLimit == 0 {
 				if tt.opts.Limit != 100 {
-					t.Errorf("InventoryOptions.Validate() did not set default limit, got %d", tt.opts.Limit)
+					t.Errorf("InventoryOptions.Validate() did not set default limit to 100, got %d", tt.opts.Limit)
 				}
 			}
 		})
