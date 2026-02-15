@@ -122,16 +122,16 @@ func TestClient_GetSellerInventory_Success(t *testing.T) {
 
 func TestClient_GetSellerInventory_DefaultLimit(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// Verify default limit is set to 500
-		if got := r.URL.Query().Get("limit"); got != "500" {
-			t.Errorf("limit = %q, want %q (default)", got, "500")
+		// Verify default limit is set to 100
+		if got := r.URL.Query().Get("limit"); got != "100" {
+			t.Errorf("limit = %q, want %q (default)", got, "100")
 		}
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		_, _ = w.Write([]byte(`{
 			"inventory": [],
-			"pagination": {"total": 0, "returned": 0, "offset": 0, "limit": 500}
+			"pagination": {"total": 0, "returned": 0, "offset": 0, "limit": 100}
 		}`))
 	}))
 	defer server.Close()
@@ -179,7 +179,7 @@ func TestClient_GetSellerInventory_ValidationError(t *testing.T) {
 		},
 		{
 			name:    "limit exceeds max",
-			opts:    InventoryOptions{Limit: 501, Offset: 0},
+			opts:    InventoryOptions{Limit: 10001, Offset: 0},
 			wantErr: true,
 		},
 		{
