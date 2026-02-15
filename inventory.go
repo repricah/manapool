@@ -15,7 +15,7 @@ import (
 // Example:
 //
 //	opts := manapool.InventoryOptions{
-//	    Limit:  500,  // max 500
+//	    Limit:  100,  // default: 100, max: 10000
 //	    Offset: 0,    // start at beginning
 //	}
 //	resp, err := client.GetSellerInventory(ctx, opts)
@@ -151,7 +151,7 @@ func (c *Client) GetInventoryByTCGPlayerID(ctx context.Context, tcgplayerID stri
 //   - error: Any error that occurred during iteration
 func IterateInventory(ctx context.Context, client APIClient, callback func(*InventoryItem) error) error {
 	offset := 0
-	limit := 500
+	limit := 1000 // Use larger page size for efficiency (API supports up to 10000)
 
 	for {
 		opts := InventoryOptions{

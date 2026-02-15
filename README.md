@@ -74,7 +74,7 @@ func main() {
 
     // Get your inventory with pagination
     opts := manapool.InventoryOptions{
-        Limit:  500, // max 500 items per request
+        Limit:  100, // default 100, max 10000 items per request
         Offset: 0,
     }
     inventory, err := client.GetSellerInventory(ctx, opts)
@@ -121,7 +121,7 @@ fmt.Printf("Payouts Enabled: %v\n", account.PayoutsEnabled)
 
 ```go
 opts := manapool.InventoryOptions{
-    Limit:  500,
+    Limit:  100,
     Offset: 0,
 }
 

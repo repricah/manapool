@@ -113,13 +113,13 @@ func TestInventoryOptions_Validate(t *testing.T) {
 			wantErr: false,
 		},
 		{
-			name:    "default limit (0 becomes 500)",
+			name:    "default limit (0 becomes 100)",
 			opts:    InventoryOptions{Limit: 0, Offset: 0},
 			wantErr: false,
 		},
 		{
-			name:    "max limit (500)",
-			opts:    InventoryOptions{Limit: 500, Offset: 0},
+			name:    "max limit (10000)",
+			opts:    InventoryOptions{Limit: 10000, Offset: 0},
 			wantErr: false,
 		},
 		{
@@ -130,9 +130,9 @@ func TestInventoryOptions_Validate(t *testing.T) {
 		},
 		{
 			name:    "limit exceeds max",
-			opts:    InventoryOptions{Limit: 501, Offset: 0},
+			opts:    InventoryOptions{Limit: 10001, Offset: 0},
 			wantErr: true,
-			wantMsg: "limit must not exceed 500",
+			wantMsg: "limit must not exceed 10000",
 		},
 		{
 			name:    "negative offset",
@@ -164,7 +164,7 @@ func TestInventoryOptions_Validate(t *testing.T) {
 
 			// Check that default limit is set
 			if !tt.wantErr && tt.opts.Limit == 0 {
-				if tt.opts.Limit != 500 {
+				if tt.opts.Limit != 100 {
 					t.Errorf("InventoryOptions.Validate() did not set default limit, got %d", tt.opts.Limit)
 				}
 			}

@@ -150,7 +150,7 @@ func (t Timestamp) MarshalJSON() ([]byte, error) {
 
 // InventoryOptions contains options for querying seller inventory.
 type InventoryOptions struct {
-	// Limit specifies the maximum number of items to return (default: 500, max: 500)
+	// Limit specifies the maximum number of items to return (default: 100, max: 10000)
 	Limit int
 
 	// Offset specifies the starting position in the result set (default: 0)
@@ -162,11 +162,11 @@ func (o *InventoryOptions) Validate() error {
 	if o.Limit < 0 {
 		return fmt.Errorf("limit must be non-negative, got %d", o.Limit)
 	}
-	if o.Limit > 500 {
-		return fmt.Errorf("limit must not exceed 500, got %d", o.Limit)
+	if o.Limit > 10000 {
+		return fmt.Errorf("limit must not exceed 10000, got %d", o.Limit)
 	}
 	if o.Limit == 0 {
-		o.Limit = 500 // default
+		o.Limit = 100 // default
 	}
 
 	if o.Offset < 0 {
