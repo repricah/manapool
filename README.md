@@ -1,6 +1,6 @@
 # Manapool Go Client
 
-> **⚠️ Pre-Release (v0.2.0)**: This library is under active development. The API may change before v1.0.0. Planned features are tracked in GitHub issues GitHub issues.
+> **⚠️ Pre-Release (v0.3.0)**: This library is under active development. The API may change before v1.0.0. Planned features are tracked in GitHub issues GitHub issues.
 
 A Go client library for the [Manapool API](https://manapool.com). This library provides a Go interface for managing your Magic: The Gathering inventory on Manapool.
 
@@ -9,7 +9,7 @@ A Go client library for the [Manapool API](https://manapool.com). This library p
 
 ## Features
 
-### Currently Implemented (v0.2.0)
+### Currently Implemented (v0.3.0)
 
 - ✅ **Seller Inventory Endpoints** - Get account, list inventory, lookup by TCG SKU
 - ✅ **Type-Safe** - Full Go type definitions for all API models
@@ -390,6 +390,17 @@ Contributions are welcome! Please:
 6. Push to the branch (`git push origin feature/new-feature`)
 7. Open a Pull Request
 
+## Versioning
+
+This project follows [Semantic Versioning](https://semver.org/). See [CHANGELOG.md](./CHANGELOG.md) for version history.
+
+### Upgrading
+
+When upgrading between versions, please review:
+- **[CHANGELOG.md](./CHANGELOG.md)** - Detailed list of changes
+- **[MIGRATION_GUIDE.md](./MIGRATION_GUIDE.md)** - Step-by-step upgrade instructions
+- **[AI_AGENT_HANDOFF.md](./AI_AGENT_HANDOFF.md)** - Guide for automated upgrades
+
 ## License
 
 MIT License - see LICENSE file for details
@@ -402,4 +413,10 @@ MIT License - see LICENSE file for details
 
 ## Changelog
 
-See [GitHub Releases](https://github.com/repricah/manapool/releases) for version history and detailed changelog.
+See [CHANGELOG.md](./CHANGELOG.md) for version history and detailed changes.
+
+### Latest Release: v0.3.0
+
+- **Updated API limits**: Inventory limit increased to 10,000 (was 500), default changed to 100
+- **Performance improvement**: `IterateInventory()` now uses 1,000 items per page
+- See [MIGRATION_GUIDE.md](./MIGRATION_GUIDE.md) for upgrade instructions
